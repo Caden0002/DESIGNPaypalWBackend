@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import PaypalButtonLogic from "./PaypalButtonLogic";
 
 const CheckoutPage = () => {
   const [cartItems] = useState([
@@ -12,17 +13,6 @@ const CheckoutPage = () => {
   };
 
   const totalAmount = calculateTotal();
-
-  const handlePaymentSuccess = (details) => {
-    console.log("Payment Successful:", details);
-    alert(`Payment completed by ${details.payer.name.given_name}`);
-    // Add backend API call to store payment details if needed
-  };
-
-  const handlePaymentError = (error) => {
-    console.error("Payment Error:", error);
-    alert("An error occurred during the payment process. Please try again.");
-  };
 
   return (
     <div className="relative min-h-screen flex bg-stone-200">
@@ -59,23 +49,7 @@ const CheckoutPage = () => {
               currency: "USD", // Adjust the currency code as needed
             }}
           >
-            <PayPalButtons
-              createOrder={(data, actions) => {
-                return actions.order.create({
-                  purchase_units: [
-                    {
-                      amount: {
-                        value: totalAmount.toFixed(2),
-                      },
-                    },
-                  ],
-                });
-              }}
-              onApprove={(data, actions) => {
-                return actions.order.capture().then(handlePaymentSuccess);
-              }}
-              onError={handlePaymentError}
-            />
+            <PaypalButtonLogic totalAmount={totalAmount} />
           </PayPalScriptProvider>
         </div>
       </div>
